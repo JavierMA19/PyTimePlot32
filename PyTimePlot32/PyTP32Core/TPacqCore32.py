@@ -119,10 +119,6 @@ class ChannelsConfig():
         self._InitAnalogInputs()
 
         self.SwitchOut = DaqInt.WriteDigital(Channels=DOChannels)
-        if self.AcqDC:
-            self.SetDigitalSignal(Signal=self.DCSwitch)
-        if self.AcqAC:
-            self.SetDigitalSignal(Signal=self.ACSwitch)
 #        print(DigColumns)
 #        self.DigColumns = [DigColumns]
 #        if DigColumns:
@@ -130,6 +126,11 @@ class ChannelsConfig():
 
     def StartAcquisition(self, Fs, Refresh, Vgs, Vds, **kwargs):
         self.SetBias(Vgs=Vgs, Vds=Vds)
+        if self.AcqDC:
+            self.SetDigitalSignal(Signal=self.DCSwitch)
+        if self.AcqAC:
+            self.SetDigitalSignal(Signal=self.ACSwitch)
+
 #        if self.DigitalOutputs:
 #            self.SetDigitalOutputs()
 
