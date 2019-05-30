@@ -71,7 +71,7 @@ class ChannelsConfig():
 
         index = 0
         for ch in self.ChNamesList:
-            InChans.append(self.aiChannels[ch])
+            InChans.append(aiChannels[ch])
             self.ChannelIndex[ch] = (index)
             index += 1
 
