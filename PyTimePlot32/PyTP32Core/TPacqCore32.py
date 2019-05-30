@@ -52,8 +52,7 @@ DOChannels = ['port0/line0:9', ]
 
 class ChannelsConfig():
 
-    DCChannelIndex = None
-    ACChannelIndex = None
+    ChannelIndex = None
     ChNamesList = None
     AnalogInputs = None
     GateChannel = None
@@ -166,20 +165,21 @@ class ChannelsConfig():
 
         if _DataEveryNEvent is not None:
             if self.AcqDC:
-                aiDataDC = self._SortChannels(Data, self.DCChannelIndex)
+                aiDataDC = self._SortChannels(Data, self.ChannelIndex)
                 aiDataDC = (aiDataDC-self.BiasVd) / self.DCGain
 
             if self.AcqAC:
-                aiDataAC = self._SortChannels(Data, self.ACChannelIndex)
+                aiDataAC = self._SortChannels(Data, self.ChannelIndex)
                 aiDataAC = aiDataAC / self.ACGain
 
             if self.AcqAC and self.AcqDC:
-                aiData = np.hstack((aiDataDC, aiDataAC))
-                _DataEveryNEvent(aiData)
-            elif self.AcqAC:
-                _DataEveryNEvent(aiDataAC)
-            elif self.AcqDC:
-                _DataEveryNEvent(aiDataDC)
+                print('ERROR')
+#                aiData = np.hstack((aiDataDC, aiDataAC))
+#                _DataEveryNEvent(aiData)
+#            elif self.AcqAC:
+#                _DataEveryNEvent(aiDataAC)
+#            elif self.AcqDC:
+#                _DataEveryNEvent(aiDataDC)
         
     def DoneEventCallBack(self, Data):
         print('Done callback')
