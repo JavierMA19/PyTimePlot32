@@ -12,33 +12,40 @@ import numpy as np
 
 
 # Daq card connections mapping 'Chname':(DCout, ACout)
-aiChannels = {'Ch01': ('ai0', 'ai8'),
-              'Ch02': ('ai1', 'ai9'),
-              'Ch03': ('ai2', 'ai10'),
-              'Ch04': ('ai3', 'ai11'),
-              'Ch05': ('ai4', 'ai12'),
-              'Ch06': ('ai5', 'ai13'),
-              'Ch07': ('ai6', 'ai14'),
-              'Ch08': ('ai7', 'ai15'),
-              'Ch09': ('ai16', 'ai24'),
-              'Ch10': ('ai17', 'ai25'),
-              'Ch11': ('ai18', 'ai26'),
-              'Ch12': ('ai19', 'ai27'),
-              'Ch13': ('ai20', 'ai28'),
-              'Ch14': ('ai21', 'ai29'),
-              'Ch15': ('ai22', 'ai30'),
-              'Ch16': ('ai23', 'ai31'),
-              }
+aiChannels = {'Ch01': 'ai8',
+              'Ch11': 'ai12',
+              'Ch03': 'ai9',
+              'Ch09': 'ai15',
+              'Ch05': 'ai10',
+              'Ch15': 'ai14',
+              'Ch07': 'ai11',
+              'Ch13': 'ai13',
+              'Ch02': 'ai0',
+              'Ch12': 'ai4',
+              'Ch04': 'ai1',
+              'Ch10': 'ai7',
+              'Ch06': 'ai2',
+              'Ch16': 'ai6',
+              'Ch08': 'ai3',
+              'Ch14': 'ai5',
+              'Ch27': 'ai27',
+              'Ch17': 'ai29',
+              'Ch25': 'ai26',
+              'Ch19': 'ai30',
+              'Ch31': 'ai25',
+              'Ch21': 'ai31',
+              'Ch29': 'ai24',
+              'Ch23': 'ai28',
+              'Ch28': 'ai19',
+              'Ch18': 'ai21',
+              'Ch26': 'ai18',
+              'Ch20': 'ai22',
+              'Ch32': 'ai17',
+              'Ch22': 'ai23',
+              'Ch30': 'ai16',
+              'Ch24': 'ai20'}
 
-doColumns = {'Col1': ('line0', 'line1'),
-             'Col2': ('line2', 'line3'),
-             'Col3': ('line4', 'line5'),
-             'Col4': ('line6', 'line7'),
-             'Col5': ('line8', 'line9'),
-             'Col6': ('line10', 'line11'),
-             'Col7': ('line12', 'line13'),
-             'Col8': ('line14', 'line15'),
-             }
+DOChannels = ['port0/line0:9', ]
 
 ##############################################################################
 
@@ -51,6 +58,8 @@ class ChannelsConfig():
     AnalogInputs = None
     GateChannel = None
     DigitalOutputs = None
+    DCSwitch = np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
+    ACSwitch = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=np.uint8)
 
     # Events list
     DataEveryNEvent = None
@@ -62,21 +71,13 @@ class ChannelsConfig():
         self.ACChannelIndex = {}
         InChans = []
         index = 0
-        sortindex = 0
+        InChans = []
+
+        index = 0
         for ch in self.ChNamesList:
-            if self.AcqDC:
-                InChans.append(aiChannels[ch][0])
-                self.DCChannelIndex[ch] = (index, sortindex)
-                index += 1
-                print(ch, ' DC -->', aiChannels[ch][0])
-                print('SortIndex ->', self.DCChannelIndex[ch])
-            if self.AcqAC:
-                InChans.append(aiChannels[ch][1])
-                self.ACChannelIndex[ch] = (index, sortindex)
-                index += 1
-                print(ch, ' AC -->', aiChannels[ch][1])
-                print('SortIndex ->', self.ACChannelIndex[ch])
-            sortindex += 1
+            InChans.append(self.aiChannels[ch])
+            self.ChannelIndex[ch] = (index)
+            index += 1
 
         print('Input ai', InChans)
 
@@ -85,18 +86,18 @@ class ChannelsConfig():
         self.AnalogInputs.EveryNEvent = self.EveryNEventCallBack
         self.AnalogInputs.DoneEvent = self.DoneEventCallBack
 
-    def _InitDigitalOutputs(self):
-        print('InitDigitalOutputs')
-        print(self.DigColumns)
-        DOChannels = []
-
-        for digc in self.DigColumns:
-            print(digc)
-            DOChannels.append(doColumns[digc][0])
-            DOChannels.append(doColumns[digc][1])
-        print(DOChannels)
-
-        self.DigitalOutputs = DaqInt.WriteDigital(Channels=DOChannels)
+#    def _InitDigitalOutputs(self):
+#        print('InitDigitalOutputs')
+#        print(self.DigColumns)
+#        DOChannels = []
+#
+#        for digc in self.DigColumns:
+#            print(digc)
+#            DOChannels.append(doColumns[digc][0])
+#            DOChannels.append(doColumns[digc][1])
+#        print(DOChannels)
+#
+#        self.DigitalOutputs = DaqInt.WriteDigital(Channels=DOChannels)
 
     def _InitAnalogOutputs(self, ChVds, ChVs):
         print('ChVds ->', ChVds)
@@ -104,7 +105,7 @@ class ChannelsConfig():
         self.VsOut = DaqInt.WriteAnalog((ChVs,))
         self.VdsOut = DaqInt.WriteAnalog((ChVds,))
 
-    def __init__(self, Channels, DigColumns,
+    def __init__(self, Channels,
                  AcqDC=True, AcqAC=True,
                  ChVds='ao0', ChVs='ao1',
                  ACGain=1e6, DCGain=10e3):
@@ -117,15 +118,21 @@ class ChannelsConfig():
         self.ACGain = ACGain
         self.DCGain = DCGain
         self._InitAnalogInputs()
-        print(DigColumns)
-        self.DigColumns = [DigColumns]
-        if DigColumns:
-            self._InitDigitalOutputs()
+
+        self.SwitchOut = DaqInt.WriteDigital(Channels=DOChannels)
+        if self.AcqDC:
+            self.SetDigitalSignal(Signal=self.DCSwitch)
+        if self.AcqAC:
+            self.SetDigitalSignal(Signal=self.ACSwitch)
+#        print(DigColumns)
+#        self.DigColumns = [DigColumns]
+#        if DigColumns:
+#            self._InitDigitalOutputs()
 
     def StartAcquisition(self, Fs, Refresh, Vgs, Vds, **kwargs):
         self.SetBias(Vgs=Vgs, Vds=Vds)
-        if self.DigitalOutputs:
-            self.SetDigitalOutputs()
+#        if self.DigitalOutputs:
+#            self.SetDigitalOutputs()
 
         EveryN = Refresh*Fs # TODO check this
         self.AnalogInputs.ReadContData(Fs=Fs,
@@ -139,24 +146,11 @@ class ChannelsConfig():
         self.Vgs = Vgs
         self.Vds = Vds
 
-    def SetDigitalOutputs(self):
-        print('SetDigitalOutputs')
-        DOut = np.array([], dtype=np.bool)
-
-        for nCol in range(len(self.DigColumns)):
-            Lout = np.zeros((1, len(self.DigColumns)), dtype=np.bool)
-            Lout[0, nCol: (nCol + 1)] = True
-            Cout = np.vstack((Lout, ~Lout))
-            DOut = np.vstack((DOut, Cout)) if DOut.size else Cout
-
-#        SortDInds = []
-#        for line in DOut[0:-1:2, :]:
-#            SortDInds.append(np.where(line))
-#
-#        self.SortDInds = SortDInds
-
-        print(DOut.astype(np.uint8), 'Digital Signal')
-        self.DigitalOutputs.SetDigitalSignal(Signal=DOut.astype(np.uint8))
+    def SetDigitalSignal(self, Signal):
+        print('SetDigitalSignal')
+        if not self.SwitchOut:
+            self.SwitchOut = DaqInt.WriteDigital(Channels=DOChannels)
+        self.SwitchOut.SetSignal(Signal)
 
     def _SortChannels(self, data, SortDict):
         (samps, inch) = data.shape

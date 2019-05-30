@@ -26,7 +26,7 @@ import PyCont.PlotModule as PltMod
 
 #import PyTPCore.FileModule as FileMod
 #import PyTPCore.PlotModule as PltMod
-import PyTPCore.TPacqThread as AcqMod
+import PyTPCore.TPacqThread32 as AcqMod
 
 
 class MainWindow(Qt.QWidget):

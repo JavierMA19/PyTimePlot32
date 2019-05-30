@@ -9,7 +9,7 @@ Created on Wed Mar  6 12:25:45 2019
 from PyQt5 import Qt
 import pyqtgraph.parametertree.parameterTypes as pTypes
 import numpy as np
-import TPacqCore as CoreMod
+import TPacqCore32 as CoreMod
 
 import PyCont.FileModule as FileMod
 #import FileModule as FileMod
@@ -92,25 +92,89 @@ SampSettingConf = ({'title': 'Channels Config',
                                                {'name': 'Ch16',
                                                 'tip': 'Ch16',
                                                 'type': 'bool',
-                                                'value': True},), },
-                                 {'tittle': 'ColumnsControl',
-                                  'name': 'DigColumns',
-                                  'type': 'group',
-                                  'children': ({'name': 'Columns',
-                                                'tip': 'Columns',
-                                                'type': 'list',
-                                                'values': [
-                                                           '',
-                                                           'Col1', 
-                                                           'Col2', 
-                                                           'Col3',
-                                                           'Col4', 
-                                                           'Col5',
-                                                           'Col6', 
-                                                           'Col7',
-                                                           'Col8', 
-                                                           ],
-                                                },), },
+                                                'value': True},
+                                               {'name': 'Ch17',
+                                                'tip': 'Ch17',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch18',
+                                                'tip': 'Ch18',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch19',
+                                                'tip': 'Ch19',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch20',
+                                                'tip': 'Ch20',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch21',
+                                                'tip': 'Ch21',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch22',
+                                                'tip': 'Ch22',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch23',
+                                                'tip': 'Ch23',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch24',
+                                                'tip': 'Ch24',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch25',
+                                                'tip': 'Ch25',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch26',
+                                                'tip': 'Ch26',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch27',
+                                                'tip': 'Ch27',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch28',
+                                                'tip': 'Ch28',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch29',
+                                                'tip': 'Ch29',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch30',
+                                                'tip': 'Ch30',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch31',
+                                                'tip': 'Ch31',
+                                                'type': 'bool',
+                                                'value': True},
+                                               {'name': 'Ch32',
+                                                'tip': 'Ch32',
+                                                'type': 'bool',
+                                                'value': True}, ), },
+#                                 {'tittle': 'ColumnsControl',
+#                                  'name': 'DigColumns',
+#                                  'type': 'group',
+#                                  'children': ({'name': 'Columns',
+#                                                'tip': 'Columns',
+#                                                'type': 'list',
+#                                                'values': [
+#                                                           '',
+#                                                           'Col1', 
+#                                                           'Col2', 
+#                                                           'Col3',
+#                                                           'Col4', 
+#                                                           'Col5',
+#                                                           'Col6', 
+#                                                           'Col7',
+#                                                           'Col8', 
+#                                                           ],
+#                                                },), },
 
                                  ), },
 
@@ -152,7 +216,6 @@ class SampSetParam(pTypes.GroupParameter):
     NewConf = Qt.pyqtSignal()
 
     Chs = []
-    Col = []
     Acq = {}
 
     def __init__(self, **kwargs):
@@ -165,7 +228,6 @@ class SampSetParam(pTypes.GroupParameter):
 
         self.ChsConfig = self.param('ChsConfig')
         self.Channels = self.ChsConfig.param('Channels')
-        self.Columns = self.ChsConfig.param('DigColumns')
 
         # Init Settings
         self.on_Acq_Changed()
@@ -174,7 +236,6 @@ class SampSetParam(pTypes.GroupParameter):
 
         # Signals
         self.Channels.sigTreeStateChanged.connect(self.on_Ch_Changed)
-        self.Columns.sigTreeStateChanged.connect(self.on_Ch_Changed)
         self.ChsConfig.param('AcqAC').sigValueChanged.connect(self.on_Acq_Changed)
         self.ChsConfig.param('AcqDC').sigValueChanged.connect(self.on_Acq_Changed)
         self.Fs.sigValueChanged.connect(self.on_Fs_Changed)
@@ -208,20 +269,18 @@ class SampSetParam(pTypes.GroupParameter):
         Ind = 0
         ChNames = {}
         acqTys = []
-        self.Col = self.Columns.param('Columns').value()
-        print(self.Col, 'Col')
         for tyn, tyv in self.Acq.items():
             if tyv:
                 acqTys.append(tyn)
 
         if 'AcqDC' in acqTys:
             for Ch in self.Chs:
-                ChNames[Ch + self.Col + 'DC'] = Ind
+                ChNames[Ch + 'DC'] = Ind
                 Ind += 1
 
         if 'AcqAC' in acqTys:
             for Ch in self.Chs:
-                ChNames[Ch + self.Col + 'AC'] = Ind
+                ChNames[Ch + 'AC'] = Ind
                 Ind += 1
 
         return ChNames
@@ -237,8 +296,6 @@ class SampSetParam(pTypes.GroupParameter):
         for p in self.ChsConfig.children():
             if p.name() is 'Channels':
                 ChanKwargs[p.name()] = self.Chs
-            elif p.name() is 'DigColumns':
-                ChanKwargs[p.name()] = self.Col
             else:
                 ChanKwargs[p.name()] = p.value()
         print(ChanKwargs, 'ChanKwargs')
