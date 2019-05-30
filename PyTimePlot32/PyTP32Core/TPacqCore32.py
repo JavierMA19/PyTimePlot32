@@ -66,10 +66,7 @@ class ChannelsConfig():
 
     def _InitAnalogInputs(self):
         print('InitAnalogInputs')
-        self.DCChannelIndex = {}
-        self.ACChannelIndex = {}
-        InChans = []
-        index = 0
+        self.ChannelIndex = {}
         InChans = []
 
         index = 0
