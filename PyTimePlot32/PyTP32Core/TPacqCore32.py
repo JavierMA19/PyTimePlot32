@@ -55,7 +55,6 @@ class ChannelsConfig():
     ChannelIndex = None
     ChNamesList = None
     AnalogInputs = None
-    GateChannel = None
     DigitalOutputs = None
     DCSwitch = np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
     ACSwitch = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=np.uint8)
