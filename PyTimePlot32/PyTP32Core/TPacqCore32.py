@@ -56,6 +56,7 @@ class ChannelsConfig():
     ChNamesList = None
     AnalogInputs = None
     DigitalOutputs = None
+    SwitchOut = None
     DCSwitch = np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
     ACSwitch = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=np.uint8)
 
@@ -123,8 +124,10 @@ class ChannelsConfig():
     def StartAcquisition(self, Fs, Refresh, Vgs, Vds, **kwargs):
         self.SetBias(Vgs=Vgs, Vds=Vds)
         if self.AcqDC:
+            print('DC')
             self.SetDigitalSignal(Signal=self.DCSwitch)
         if self.AcqAC:
+            print('AC')
             self.SetDigitalSignal(Signal=self.ACSwitch)
 
 #        if self.DigitalOutputs:
@@ -143,21 +146,21 @@ class ChannelsConfig():
         self.Vds = Vds
 
     def SetDigitalSignal(self, Signal):
-        print('SetDigitalSignal')
         if not self.SwitchOut:
             self.SwitchOut = DaqInt.WriteDigital(Channels=DOChannels)
-        self.SwitchOut.SetSignal(Signal)
+        self.SwitchOut.SetDigitalSignal(Signal)
 
     def _SortChannels(self, data, SortDict):
         (samps, inch) = data.shape
+        print(samps, inch)
         sData = np.zeros((samps, len(SortDict)))
         for chn, inds in sorted(SortDict.iteritems()):
-            sData[:, inds[1]] = data[:, inds[0]]
+            print(chn, inds)
+            sData[:, inds] = data[:, inds]
 
         return sData
 
     def EveryNEventCallBack(self, Data):
-
         _DataEveryNEvent = self.DataEveryNEvent
 
         if _DataEveryNEvent is not None:
@@ -171,12 +174,12 @@ class ChannelsConfig():
 
             if self.AcqAC and self.AcqDC:
                 print('ERROR')
-#                aiData = np.hstack((aiDataDC, aiDataAC))
-#                _DataEveryNEvent(aiData)
-#            elif self.AcqAC:
-#                _DataEveryNEvent(aiDataAC)
-#            elif self.AcqDC:
-#                _DataEveryNEvent(aiDataDC)
+                aiData = np.hstack((aiDataDC, aiDataAC))
+                _DataEveryNEvent(aiData)
+            elif self.AcqAC:
+                _DataEveryNEvent(aiDataAC)
+            elif self.AcqDC:
+                _DataEveryNEvent(aiDataDC)
         
     def DoneEventCallBack(self, Data):
         print('Done callback')
