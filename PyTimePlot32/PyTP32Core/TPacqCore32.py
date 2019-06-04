@@ -65,7 +65,6 @@ class ChannelsConfig():
     DataDoneEvent = None
 
     def _InitAnalogInputs(self):
-        print('InitAnalogInputs')
         self.ChannelIndex = {}
         InChans = []
 
@@ -75,25 +74,12 @@ class ChannelsConfig():
             self.ChannelIndex[ch] = (index)
             index += 1
 
-        print('Input ai', InChans)
 
         self.AnalogInputs = DaqInt.ReadAnalog(InChans=InChans)
         # events linking
         self.AnalogInputs.EveryNEvent = self.EveryNEventCallBack
         self.AnalogInputs.DoneEvent = self.DoneEventCallBack
 
-#    def _InitDigitalOutputs(self):
-#        print('InitDigitalOutputs')
-#        print(self.DigColumns)
-#        DOChannels = []
-#
-#        for digc in self.DigColumns:
-#            print(digc)
-#            DOChannels.append(doColumns[digc][0])
-#            DOChannels.append(doColumns[digc][1])
-#        print(DOChannels)
-#
-#        self.DigitalOutputs = DaqInt.WriteDigital(Channels=DOChannels)
 
     def _InitAnalogOutputs(self, ChVds, ChVs):
         print('ChVds ->', ChVds)
@@ -116,10 +102,6 @@ class ChannelsConfig():
         self._InitAnalogInputs()
 
         self.SwitchOut = DaqInt.WriteDigital(Channels=DOChannels)
-#        print(DigColumns)
-#        self.DigColumns = [DigColumns]
-#        if DigColumns:
-#            self._InitDigitalOutputs()
 
     def StartAcquisition(self, Fs, Refresh, Vgs, Vds, **kwargs):
         self.SetBias(Vgs=Vgs, Vds=Vds)
@@ -129,9 +111,6 @@ class ChannelsConfig():
         if self.AcqAC:
             print('AC')
             self.SetDigitalSignal(Signal=self.ACSwitch)
-
-#        if self.DigitalOutputs:
-#            self.SetDigitalOutputs()
 
         EveryN = Refresh*Fs # TODO check this
         self.AnalogInputs.ReadContData(Fs=Fs,
@@ -152,10 +131,8 @@ class ChannelsConfig():
 
     def _SortChannels(self, data, SortDict):
         (samps, inch) = data.shape
-        print(samps, inch)
         sData = np.zeros((samps, len(SortDict)))
         for chn, inds in sorted(SortDict.iteritems()):
-            print(chn, inds)
             sData[:, inds] = data[:, inds]
 
         return sData
@@ -188,5 +165,11 @@ class ChannelsConfig():
         print('Stopppp')
         self.SetBias(Vgs=0, Vds=0)
         self.AnalogInputs.StopContData()
+        if self.SwitchOut is not None:
+            print('Clear Digital')
+            self.SwitchOut.ClearTask()
+            self.SwitchOut = None
+
+
 
 

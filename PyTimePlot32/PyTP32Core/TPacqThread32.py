@@ -309,7 +309,6 @@ class DataAcquisitionThread(Qt.QThread):
     
     def __init__(self, ChannelsConfigKW, SampKw):
         super(DataAcquisitionThread, self).__init__()
-        print('ChannelsConfigKW', ChannelsConfigKW)
         self.DaqInterface = CoreMod.ChannelsConfig(**ChannelsConfigKW)
         self.DaqInterface.DataEveryNEvent = self.NewData
         self.SampKw = SampKw
