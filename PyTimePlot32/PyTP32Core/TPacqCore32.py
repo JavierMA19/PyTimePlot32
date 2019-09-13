@@ -6,8 +6,6 @@ Created on Tue Mar  5 14:13:45 2019
 @author: aguimera
 """
 import PyCont.DaqInterface as DaqInt
-
-#import DaqInterface as DaqInt
 import numpy as np
 
 
@@ -74,12 +72,10 @@ class ChannelsConfig():
             self.ChannelIndex[ch] = (index)
             index += 1
 
-
         self.AnalogInputs = DaqInt.ReadAnalog(InChans=InChans)
         # events linking
         self.AnalogInputs.EveryNEvent = self.EveryNEventCallBack
         self.AnalogInputs.DoneEvent = self.DoneEventCallBack
-
 
     def _InitAnalogOutputs(self, ChVds, ChVs):
         print('ChVds ->', ChVds)
@@ -157,7 +153,7 @@ class ChannelsConfig():
                 _DataEveryNEvent(aiDataAC)
             elif self.AcqDC:
                 _DataEveryNEvent(aiDataDC)
-        
+
     def DoneEventCallBack(self, Data):
         print('Done callback')
 

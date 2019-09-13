@@ -12,7 +12,6 @@ import numpy as np
 import TPacqCore32 as CoreMod
 
 import PyCont.FileModule as FileMod
-#import FileModule as FileMod
 
 
 SampSettingConf = ({'title': 'Channels Config',
@@ -157,25 +156,6 @@ SampSettingConf = ({'title': 'Channels Config',
                                                 'tip': 'Ch32',
                                                 'type': 'bool',
                                                 'value': True}, ), },
-#                                 {'tittle': 'ColumnsControl',
-#                                  'name': 'DigColumns',
-#                                  'type': 'group',
-#                                  'children': ({'name': 'Columns',
-#                                                'tip': 'Columns',
-#                                                'type': 'list',
-#                                                'values': [
-#                                                           '',
-#                                                           'Col1', 
-#                                                           'Col2', 
-#                                                           'Col3',
-#                                                           'Col4', 
-#                                                           'Col5',
-#                                                           'Col6', 
-#                                                           'Col7',
-#                                                           'Col8', 
-#                                                           ],
-#                                                },), },
-
                                  ), },
 
                    {'name': 'Sampling Settings',
@@ -306,7 +286,7 @@ class SampSetParam(pTypes.GroupParameter):
 
 class DataAcquisitionThread(Qt.QThread):
     NewTimeData = Qt.pyqtSignal()
-    
+
     def __init__(self, ChannelsConfigKW, SampKw):
         super(DataAcquisitionThread, self).__init__()
         self.DaqInterface = CoreMod.ChannelsConfig(**ChannelsConfigKW)
