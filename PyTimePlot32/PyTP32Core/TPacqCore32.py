@@ -128,7 +128,7 @@ class ChannelsConfig():
     def _SortChannels(self, data, SortDict):
         (samps, inch) = data.shape
         sData = np.zeros((samps, len(SortDict)))
-        for chn, inds in sorted(SortDict.iteritems()):
+        for chn, inds in sorted(SortDict.items()):
             sData[:, inds] = data[:, inds]
 
         return sData
