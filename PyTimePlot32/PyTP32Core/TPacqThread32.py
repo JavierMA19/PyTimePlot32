@@ -11,7 +11,7 @@ import pyqtgraph.parametertree.parameterTypes as pTypes
 import numpy as np
 import TPacqCore32 as CoreMod
 
-import PyCont.FileModule as FileMod
+import PyqtTools.FileModule as FileMod
 
 
 SampSettingConf = ({'title': 'Channels Config',

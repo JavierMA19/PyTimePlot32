@@ -21,8 +21,8 @@ import os
 import sys
 from pyqtgraph.parametertree import Parameter, ParameterTree
 
-import PyCont.FileModule as FileMod
-import PyCont.PlotModule as PltMod
+import PyqtTools.FileModule as FileMod
+import PyqtTools.PlotModule as PltMod
 
 #import PyTPCore.FileModule as FileMod
 #import PyTPCore.PlotModule as PltMod
@@ -195,7 +195,7 @@ def main():
     import pkg_resources
 
     # Add version option
-    __version__ = pkg_resources.require("PyCont")[0].version
+    __version__ = pkg_resources.require("PyqtTools")[0].version
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version',
                         version='%(prog)s {version}'.format(
