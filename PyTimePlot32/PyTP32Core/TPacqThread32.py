@@ -185,7 +185,13 @@ SampSettingConf = ({'title': 'Channels Config',
                                   'type': 'float',
                                   'value': 0.1,
                                   'step': 0.1,
-                                  'limits': (-0.1, 0.5)}, ), }
+                                  'limits': (-0.1, 0.5)},
+                                 {'title': 'Refresh graph',
+                                  'name':'Graph',
+                                  'type': 'action',},
+                                  
+                                  
+                                     ), }
                    )
 
 

@@ -71,6 +71,7 @@ class MainWindow(Qt.QWidget):
         self.threadAcq = None
         self.threadSave = None
         self.threadPlotter = None
+        self.RefreshGrapg = None
 
         self.FileParameters = FileMod.SaveFileParameters(QTparent=self,
                                                          name='Record File')
@@ -123,6 +124,11 @@ class MainWindow(Qt.QWidget):
             if self.threadPlotterRaw is not None:
                 self.threadPlotterRaw.SetRefreshTime(data)
 
+        if childName == 'SampSettingConf.Sampling Settings.Graph':
+            print('ActionButton')
+            self.RefreshGrapg = True
+            
+
     def on_NewConf(self):
         self.Parameters.sigTreeStateChanged.disconnect()
         self.PlotParams.SetChannels(self.SamplingPar.GetChannelsNames())
@@ -148,9 +154,13 @@ class MainWindow(Qt.QWidget):
                     print('Remove File')
                     os.remove(FileName)
                 MaxSize = self.FileParameters.param('MaxSize').value()
+                ch = (list(self.SamplingPar.GetChannelsNames()))
                 self.threadSave = FileMod.DataSavingThread(FileName=FileName,
                                                            nChannels=PlotterKwargs['nChannels'],
-                                                           MaxSize=MaxSize)
+                                                           MaxSize=MaxSize,
+                                                           Fs=self.SamplingPar.SampSet.param('Fs').value(),
+                                                           ChnNames=np.array(ch, dtype='S10'),
+                                                           )
                 self.threadSave.start()
             self.threadPlotter = PltMod.Plotter(**PlotterKwargs)
             self.threadPlotter.start()
@@ -184,6 +194,10 @@ class MainWindow(Qt.QWidget):
 
         if self.threadSave is not None:
             self.threadSave.AddData(self.threadAcq.aiData)
+            if self.RefreshGrapg:
+                self.threadSave.FileBuff.RefreshPlot()
+                self.RefreshGrapg = None
+            
 
         self.threadPlotter.AddData(self.threadAcq.aiData)
         self.threadPSDPlotter.AddData(self.threadAcq.aiData)
