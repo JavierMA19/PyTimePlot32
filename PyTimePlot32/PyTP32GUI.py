@@ -71,6 +71,7 @@ class MainWindow(Qt.QWidget):
         self.threadAcq = None
         self.threadSave = None
         self.threadPlotter = None
+        self.RefreshGrapg = None
 
         self.FileParameters = FileMod.SaveFileParameters(QTparent=self,
                                                          name='Record File')
@@ -122,6 +123,11 @@ class MainWindow(Qt.QWidget):
         if childName == 'Raw Plot.RefreshTime':
             if self.threadPlotterRaw is not None:
                 self.threadPlotterRaw.SetRefreshTime(data)
+
+        if childName == 'SampSettingConf.Sampling Settings.Graph':
+            print('ActionButton')
+            self.RefreshGrapg = True
+            
 
     def on_NewConf(self):
         self.Parameters.sigTreeStateChanged.disconnect()
@@ -188,6 +194,10 @@ class MainWindow(Qt.QWidget):
 
         if self.threadSave is not None:
             self.threadSave.AddData(self.threadAcq.aiData)
+            if self.RefreshGrapg:
+                self.threadSave.FileBuff.RefreshPlot()
+                self.RefreshGrapg = None
+            
 
         self.threadPlotter.AddData(self.threadAcq.aiData)
         self.threadPSDPlotter.AddData(self.threadAcq.aiData)
