@@ -148,9 +148,13 @@ class MainWindow(Qt.QWidget):
                     print('Remove File')
                     os.remove(FileName)
                 MaxSize = self.FileParameters.param('MaxSize').value()
+                print((self.SamplingPar.GetChannelsNames()))
                 self.threadSave = FileMod.DataSavingThread(FileName=FileName,
                                                            nChannels=PlotterKwargs['nChannels'],
-                                                           MaxSize=MaxSize)
+                                                           MaxSize=MaxSize,
+                                                           Fs=self.SamplingPar.SampSet.param('Fs').value(),
+                                                           ChnNames=self.SamplingPar.GetChannelsNames(),
+                                                           )
                 self.threadSave.start()
             self.threadPlotter = PltMod.Plotter(**PlotterKwargs)
             self.threadPlotter.start()
