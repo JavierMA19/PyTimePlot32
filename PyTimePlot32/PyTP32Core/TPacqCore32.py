@@ -43,7 +43,10 @@ aiChannels = {'Ch01': 'ai8',
               'Ch30': 'ai16',
               'Ch24': 'ai20'}
 
+DOChannels = ['port0/line0:15', ]
+
 DOChannels = ['port0/line0:9', ]
+Decoder = ['port0/line10:15', ]
 
 ##############################################################################
 
@@ -55,9 +58,10 @@ class ChannelsConfig():
     AnalogInputs = None
     DigitalOutputs = None
     SwitchOut = None
-    DCSwitch = np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
+    Dec = None
+    DCSwitch = np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, ], dtype=np.uint8)
     ACSwitch = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=np.uint8)
-
+    DecDigital = np.array([0, 1, 0, 1, 1], dtype=np.uint8) # Ouput should be: P26
     # Events list
     DataEveryNEvent = None
     DataDoneEvent = None
@@ -98,6 +102,7 @@ class ChannelsConfig():
         self._InitAnalogInputs()
 
         self.SwitchOut = DaqInt.WriteDigital(Channels=DOChannels)
+        self.Dec = DaqInt.WriteDigital(Channels=Decoder)
 
     def StartAcquisition(self, Fs, Refresh, Vgs, Vds, **kwargs):
         self.SetBias(Vgs=Vgs, Vds=Vds)
@@ -124,6 +129,7 @@ class ChannelsConfig():
         if not self.SwitchOut:
             self.SwitchOut = DaqInt.WriteDigital(Channels=DOChannels)
         self.SwitchOut.SetDigitalSignal(Signal)
+        self.Dec.SetDigitalSignal(self.DecDigital)
 
     def _SortChannels(self, data, SortDict):
         (samps, inch) = data.shape
